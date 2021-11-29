@@ -1,0 +1,10 @@
+{
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "cheza",
+    "password": "Cheza554654",
+    "database": "eatapp",
+    "entities": ["dist/**/*.entity{.ts,.js}"],
+    "synchronize": true
+}
