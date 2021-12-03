@@ -8,6 +8,7 @@ import { OrderItemsService } from 'src/order-items/order-items.service'
 import { OrderItemsDto } from 'src/items/dto/order-items.dto'
 import { Item } from 'src/items/enitity/item.entity'
 import { User } from 'src/users/entity/user.entity'
+import { UpdateOrderDto } from './dto/update-order.dto'
 
 @Injectable()
 export class OrderService {
@@ -23,7 +24,6 @@ export class OrderService {
     private readonly orders: Order[] = []
 
     async create(order: OrderDto): Promise<Order> {
-        // Create and save an order
         const newOrder = new OrderEntity()
         const user = await this.userRepository.findOne({ id: order.userId })
         newOrder.createdAt = new Date()
@@ -45,5 +45,26 @@ export class OrderService {
 
     async findAll(): Promise<OrderEntity[]> {
         return this.orderRepository.find()
+    }
+
+    async findOne(id: number): Promise<Order> {
+        return this.orderRepository.findOne({ where: { id: id } })
+    }
+
+    async find(user: User): Promise<Order[]> {
+        const orders = await this.orderRepository.find({
+            where: {
+                user: user,
+            },
+        })
+        return orders
+    }
+
+    async update(id: number, order: UpdateOrderDto): Promise<Order> {
+        const orderToUpdate = await this.orderRepository.findOne({
+            where: { id: id },
+        })
+        orderToUpdate.status = order.status
+        return this.orderRepository.save(orderToUpdate)
     }
 }

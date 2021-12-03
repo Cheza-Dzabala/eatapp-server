@@ -32,7 +32,7 @@ export class AuthService {
     async login(userCredentials: LoginUserDto) {
         const user = await this.validateUser(userCredentials)
         if (!user) {
-            throw new UnauthorizedException()
+            throw new UnauthorizedException('Invalid credentials')
         }
         return {
             message: 'login successful',
@@ -49,5 +49,11 @@ export class AuthService {
             throw new HttpException('User already exists', HttpStatus.CONFLICT)
         }
         return await this.usersService.create(user)
+    }
+
+    // get user from token
+    async getUserFromToken(token: string): Promise<User> {
+        const user = await this.jwtService.verify(token)
+        return await this.usersService.findOne(user.email)
     }
 }

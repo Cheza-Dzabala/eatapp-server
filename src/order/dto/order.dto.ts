@@ -1,9 +1,22 @@
 import { IsNotEmpty } from 'class-validator'
 import { OrderItemsDto } from 'src/items/dto/order-items.dto'
+import { ApiProperty } from '@nestjs/swagger'
 
 export class OrderDto {
+    @ApiProperty()
     id: string
-    @IsNotEmpty() userId: number
+
+    @ApiProperty({
+        description: 'The user who placed the order',
+    })
+    @IsNotEmpty()
+    userId: number
     createdAt: Date
-    @IsNotEmpty() items: OrderItemsDto[]
+
+    @ApiProperty({
+        description: 'An array of the items being ordered',
+        type: [OrderItemsDto],
+    })
+    @IsNotEmpty()
+    items: OrderItemsDto[]
 }

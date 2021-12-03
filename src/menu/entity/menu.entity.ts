@@ -15,6 +15,8 @@ export class Menu {
     @Column()
     image: string
 
-    @OneToMany((type) => Item, (item) => item.menu)
+    @OneToMany((type) => Item, (item) => item.menu, {
+        eager: true,
+    })
     items: Item[]
 }

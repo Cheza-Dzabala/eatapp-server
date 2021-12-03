@@ -1,14 +1,20 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { MenuService } from './menu.service'
 import { Menu } from './interfaces/menu.interface'
-import { Item } from 'src/items/interface/items.interface'
 import { MenuDto } from './dto/menu.dto'
+import { ApiTags, ApiResponse } from '@nestjs/swagger'
+import { MenuResponse } from './responses/menu.response'
+import { Item } from 'src/items/enitity/item.entity'
 
+@ApiTags('Menu')
 @Controller('menu')
 export class MenuController {
     constructor(private readonly menuService: MenuService) {}
 
-    // Get all menu items
+    @ApiResponse({
+        status: 200,
+        type: [MenuResponse],
+    })
     @Get('/')
     async findAll(): Promise<Menu[]> {
         return await this.menuService.findAll()

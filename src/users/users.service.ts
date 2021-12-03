@@ -4,6 +4,7 @@ import { User } from './interface/user.interface'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User as UserEntity } from './entity/user.entity'
+import { role } from './enums/role.enum'
 
 @Injectable()
 export class UsersService {
@@ -24,5 +25,13 @@ export class UsersService {
         const newUser: UserEntity = this.userRepository.create(user)
         await newUser.hashPassword()
         return this.userRepository.save(newUser)
+    }
+
+    async getAdmins(): Promise<User[]> {
+        return this.userRepository.find({ where: { role: role.admin } })
+    }
+
+    async getUsers(): Promise<User[]> {
+        return this.userRepository.find({ where: { role: role.user } })
     }
 }

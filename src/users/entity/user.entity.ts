@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import * as bcrypt from 'bcrypt'
 import { Order } from 'src/order/entity/order.entity'
+import { role } from '../enums/role.enum'
 
 @Entity()
 export class User {
@@ -21,6 +22,13 @@ export class User {
 
     @Column()
     preferredName: string
+
+    @Column({
+        type: 'enum',
+        enum: role,
+        default: role.user,
+    })
+    role: role
 
     @Column()
     phoneNumber: string
