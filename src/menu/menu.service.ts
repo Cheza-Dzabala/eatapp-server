@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common'
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Item } from 'src/items/enitity/item.entity'
 import { ItemsService } from 'src/items/items.service'
+import { Repository } from 'typeorm'
 import { MenuDto } from './dto/menu.dto'
 import { Menu } from './entity/menu.entity'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { Item } from 'src/items/enitity/item.entity'
 
 @Injectable()
 export class MenuService {
@@ -14,20 +18,32 @@ export class MenuService {
         private menuRepository: Repository<Menu>
     ) {}
 
-    create(menu: MenuDto): Promise<Menu> {
-        const menuEntity: Menu = this.menuRepository.create(menu)
-        return this.menuRepository.save(menuEntity)
+    async create(menu: MenuDto): Promise<Menu> {
+        const allMenus = await this.menuRepository.find()
+        const menuExists = allMenus.find((m) => m.name === menu.name)
+
+        if (!menuExists) {
+            const menuEntity: Menu = await this.menuRepository.create(menu)
+            return this.menuRepository.save(menuEntity)
+        }
+
+        throw new BadRequestException('Menu already exists')
     }
 
-    findAll(): Promise<Menu[]> {
-        return this.menuRepository.find()
+    async findAll(): Promise<Menu[]> {
+        return await this.menuRepository.find()
     }
 
-    findOne(id: number): Promise<Menu> {
-        return this.menuRepository.findOne({ id })
+    async findOne(id: number): Promise<Menu> {
+        const menu = await this.menuRepository.findOne({ where: { id } })
+        if (!menu) {
+            throw new NotFoundException('Menu not found')
+        }
+
+        return menu
     }
 
-    findItems(id: number): Promise<Item[]> {
-        return this.itemsService.find(id)
+    async findItems(id: number): Promise<Item[]> {
+        return await this.itemsService.find(id)
     }
 }

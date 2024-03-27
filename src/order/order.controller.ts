@@ -8,23 +8,26 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { AuthenticationInterceptor } from 'src/global/interceptors/user.interceptor'
 import { MyOrderDto } from './dto/myorder.dto'
 import { OrderDto } from './dto/order.dto'
+import { UpdateOrderDto } from './dto/update-order.dto'
 import { Order } from './entity/order.entity'
 import { OrderService } from './order.service'
-import { ApiBearerAuth } from '@nestjs/swagger'
-import { ApiTags } from '@nestjs/swagger'
-import { UpdateOrderDto } from './dto/update-order.dto'
 
 @ApiTags('Orders')
 @Controller('order')
 @UseInterceptors(AuthenticationInterceptor)
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class OrderController {
     constructor(private orderService: OrderService) {}
+
+    @Get('/mine')
+    find(@Body() myOrderDto: MyOrderDto): any {
+        return this.orderService.find(myOrderDto.user)
+    }
 
     @Post('/')
     async create(@Body() orderDto: OrderDto): Promise<Order> {
@@ -44,10 +47,5 @@ export class OrderController {
     @Put('/:id')
     update(@Param('id') id: string, @Body() orderDto: UpdateOrderDto): any {
         this.orderService.update(parseInt(id), orderDto)
-    }
-
-    @Get('/my-orders/')
-    find(@Body() orderDto: MyOrderDto): any {
-        return this.orderService.find(orderDto.user)
     }
 }

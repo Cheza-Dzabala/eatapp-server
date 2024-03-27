@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ItemDto } from './dto/item.dto'
-import { Repository } from 'typeorm'
-import { Item } from './enitity/item.entity'
 import { Menu } from 'src/menu/entity/menu.entity'
+import { Repository } from 'typeorm'
+import { ItemDto } from './dto/item.dto'
+import { Item } from './enitity/item.entity'
 
 @Injectable()
 export class ItemsService {
@@ -16,16 +16,30 @@ export class ItemsService {
     ) {}
 
     async find(id: number): Promise<Item[]> {
-        const menu = await this.menuRepository.findOne(id)
-        return await this.itemRepository.find({ menu: menu })
+        const menu = await this.menuRepository.findOne({
+            where: { id },
+        })
+        return await this.itemRepository.find({
+            where: {
+                menu: menu,
+            },
+        })
     }
 
     async findOne(id: number): Promise<Item> {
-        return await this.itemRepository.findOne(id)
+        return await this.itemRepository.findOne({
+            where: {
+                id,
+            },
+        })
     }
 
     async create(item: ItemDto): Promise<Item> {
-        const menu = await this.menuRepository.findOne(item.menu)
+        const menu = await this.menuRepository.findOne({
+            where: {
+                id: item.menu,
+            },
+        })
         const newItem = new Item()
         newItem.name = item.name
         newItem.price = item.price

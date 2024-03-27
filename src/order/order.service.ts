@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { OrderDto } from './dto/order.dto'
-import { Order } from './interface/order.interface'
-import { Order as OrderEntity } from './entity/order.entity'
-import { Repository } from 'typeorm'
-import { OrderItemsService } from 'src/order-items/order-items.service'
 import { OrderItemsDto } from 'src/items/dto/order-items.dto'
 import { Item } from 'src/items/enitity/item.entity'
+import { OrderItemsService } from 'src/order-items/order-items.service'
 import { User } from 'src/users/entity/user.entity'
+import { Repository } from 'typeorm'
+import { OrderDto } from './dto/order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
+import { Order as OrderEntity } from './entity/order.entity'
+import { Order } from './interface/order.interface'
 
 @Injectable()
 export class OrderService {
@@ -24,8 +24,11 @@ export class OrderService {
     private readonly orders: Order[] = []
 
     async create(order: OrderDto): Promise<Order> {
+        // todo: handle edge cases
         const newOrder = new OrderEntity()
-        const user = await this.userRepository.findOne({ id: order.userId })
+        const user = await this.userRepository.findOne({
+            where: { id: order.userId },
+        })
         newOrder.createdAt = new Date()
         newOrder.status = 'pending'
         newOrder.user = user
@@ -33,9 +36,11 @@ export class OrderService {
 
         order.items.forEach(async (item: OrderItemsDto) => {
             item.order = savedOrder.id
-            item.item = item.id
+            item.id = item.id
             const itemEntity: Item = await this.itemRepository.findOne({
-                id: item.item,
+                where: {
+                    id: item.item,
+                },
             })
             await this.orderItemService.create(item, savedOrder, itemEntity)
         })
@@ -44,7 +49,8 @@ export class OrderService {
     }
 
     async findAll(): Promise<OrderEntity[]> {
-        return this.orderRepository.find()
+        const orders = await this.orderRepository.find()
+        return orders
     }
 
     async findOne(id: number): Promise<Order> {

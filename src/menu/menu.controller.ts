@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
-import { MenuService } from './menu.service'
-import { Menu } from './interfaces/menu.interface'
-import { MenuDto } from './dto/menu.dto'
-import { ApiTags, ApiResponse } from '@nestjs/swagger'
-import { MenuResponse } from './responses/menu.response'
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { RolesGuard } from 'src/global/guards/roles.guard'
 import { Item } from 'src/items/enitity/item.entity'
+import { MenuDto } from './dto/menu.dto'
+import { Menu } from './interfaces/menu.interface'
+import { MenuService } from './menu.service'
+import { MenuResponse } from './responses/menu.response'
 
 @ApiTags('Menu')
 @Controller('menu')
@@ -30,6 +31,7 @@ export class MenuController {
         return this.menuService.findItems(parseInt(id))
     }
 
+    @UseGuards(RolesGuard)
     @Post('/')
     async create(@Body() menuDto: MenuDto): Promise<Menu> {
         return await this.menuService.create(menuDto)
