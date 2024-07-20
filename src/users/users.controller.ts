@@ -1,9 +1,9 @@
-import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common'
+import { Controller, Get, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { RolesGuard } from 'src/global/guards/roles.guard'
 import { User } from './interface/user.interface'
 import { UsersService } from './users.service'
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger'
-import { RolesGuard } from 'src/global/guards/roles.guard'
 
 @ApiTags('Users')
 @Controller('users')
