@@ -23,6 +23,8 @@ import { UsersModule } from './users/users.module'
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
             entities: ['dist/**/*.entity{.ts,.js}'],
+            autoLoadEntities: true,
+            logging: true,
             synchronize: true,
             ssl: {
                 rejectUnauthorized: false,
