@@ -24,7 +24,9 @@ import { UsersModule } from './users/users.module'
             database: process.env.DB_NAME,
             entities: ['dist/**/*.entity{.ts,.js}'],
             synchronize: true,
-            ssl: false,
+            ssl: {
+                rejectUnauthorized: false,
+            },
         }),
         AuthModule,
         UsersModule,
